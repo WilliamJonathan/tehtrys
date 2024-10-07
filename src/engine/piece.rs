@@ -7,13 +7,26 @@ pub(super) struct Piece {
 }
 
 impl Piece {
-    
+    const CELL_COUNT: usize = 4;
 }
-
+#[derive(Clone, Copy, Debug, PartialEq)]
 // AQUI SÃO OS TIPOS DE BLOCOS DO JOGOS
-pub enum Kind { Square, Line, T, L, J, S, Z }
+pub enum Kind { O, I, T, L, J, S, Z }
 
-impl Kind {    
+impl Kind {
+    pub const  ALL: [Self; 7] = [Self::O, Self::I, Self::T, Self::L, Self::J, Self::S, Self::Z];
+    // VIDEO 1 ( 1:06:33 )
+    pub fn cells(&self) -> [Vector2<usize>;Piece::CELL_COUNT] {
+        match self {
+            Kind::O => todo!(),
+            Kind::I => todo!(),
+            Kind::T => todo!(),
+            Kind::L => todo!(),
+            Kind::J => todo!(),
+            Kind::S => todo!(),
+            Kind::Z => todo!(),
+        }
+    }
 }
 
 pub enum Rotation { N, S, E, W }
