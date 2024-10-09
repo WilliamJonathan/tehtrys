@@ -8,6 +8,10 @@ pub(super) struct Piece {
 
 impl Piece {
     const CELL_COUNT: usize = 4;
+
+    pub fn cells(&self) -> impl Option<Iterator<Item=Vector2<usize>>> {
+        todo!()
+    }
 }
 #[derive(Clone, Copy, Debug, PartialEq)]
 // AQUI SÃO OS TIPOS DE BLOCOS DO JOGOS
@@ -15,18 +19,23 @@ pub enum Kind { O, I, T, L, J, S, Z }
 
 impl Kind {
     pub const  ALL: [Self; 7] = [Self::O, Self::I, Self::T, Self::L, Self::J, Self::S, Self::Z];
-    // VIDEO 1 ( 1:06:33 )
-    pub fn cells(&self) -> [Vector2<usize>;Piece::CELL_COUNT] {
+    pub fn cells(&self) -> impl Iterator<Item=&'static Vector2<isize>> {
         match self {
-            Kind::O => todo!(),
-            Kind::I => todo!(),
-            Kind::T => todo!(),
-            Kind::L => todo!(),
-            Kind::J => todo!(),
-            Kind::S => todo!(),
-            Kind::Z => todo!(),
-        }
+            Kind::O => &[( 0,0), ( 0,1), (1,0), (1,1)],
+            Kind::I => &[(-1,0), ( 0,0), (1,0), (2,0)],
+            Kind::T => &[(-1,0), ( 0,0), (1,0), (0,1)],
+            Kind::L => &[(-1,0), ( 0,0), (1,0), (1,1)],
+            Kind::J => &[(-1,1), (-1,0), (0,0), (1,0)],
+            Kind::S => &[(-1,0), ( 0,0), (0,1), (1,1)],
+            Kind::Z => &[(-1,1), ( 0,1), (0,0), (1,0)],
+        }.iter().map(From::from)
     }
 }
 
 pub enum Rotation { N, S, E, W }
+// video 1 1:26:20
+impl<S> std::ops::Mul<Rotation> for Vector2<S> {
+    fn matrix() {
+        
+    }
+}

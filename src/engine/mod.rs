@@ -26,7 +26,7 @@ impl Engine {
         self.bag.shuffle(&mut self.rng);
     }
 
-    fn place_cursor(&) {
+    fn place_cursor(&mut self) {
         // Afirma que a peça não se sobrepõe às células preenchidas
         
     }
