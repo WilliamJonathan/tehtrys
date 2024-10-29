@@ -1,22 +1,44 @@
-use super::{Coordinate, Offset};
+use cgmath::Zero;
+use super::{Board, Coordinate, Offset};
 
 pub(super) struct Piece {
     pub kind: Kind,
-    pub position: Coordinate,
+    pub position: Offset,
     pub rotation: Rotation,
 }
 
 impl Piece {
     const CELL_COUNT: usize = 4;
 
-    pub fn cells(&self) -> Option<impl Iterator<Item=Coordinate>> {
-        self.kind.cells()
-            .map(|cell|cell * self.rotation)
+    pub fn cells(&self) -> Option<[Coordinate; Self::CELL_COUNT]> {
+        let offsets = self.kind.cells()
+            .map(self.rotator())
+            .map(self.positioner());
+    
+        let mut coords = [Coordinate::zero(); Self::CELL_COUNT];
+        for (Offset { x, y }, coord) in offsets.into_iter().zip(&mut coords) {
+            let new = match (x.try_into(), y.try_into()) {
+                (Ok(x), Ok(y)) => Coordinate { x, y },
+                _ => return None,
+            };
+            if Board::in_bounds(new) {
+                *coord = new;
+            } else {
+                return None;
+            }
+        }
+
+        Some(coords)
     }
 
-    fn rotator(&self) -> impl Fn(Coordinate) -> Coordinate {
-        // VIDEO 1 ( 1:41:45 )
-        |
+    fn rotator(&self) -> impl Fn(Offset) -> Offset {
+        let rotation = self.rotation;
+        move |cell|cell * rotation
+    }
+
+    fn positioner(&self) -> impl Fn(Offset) -> Offset {
+        let position = self.position;
+        move |cell| cell + position
     }
 }
 
@@ -25,7 +47,7 @@ pub enum Kind { O, I, T, L, J, S, Z }
 
 impl Kind {
     pub const  ALL: [Self; 7] = [Self::O, Self::I, Self::T, Self::L, Self::J, Self::S, Self::Z];
-    pub fn cells(&self) -> impl Iterator<Item=&'static Vector2<isize>> {
+    pub fn cells(&self) -> [Offset;Piece::CELL_COUNT] {
         match self {
             Kind::O => &[( 0,0), ( 0,1), (1,0), (1,1)],
             Kind::I => &[(-1,0), ( 0,0), (1,0), (2,0)],
@@ -34,21 +56,40 @@ impl Kind {
             Kind::J => &[(-1,1), (-1,0), (0,0), (1,0)],
             Kind::S => &[(-1,0), ( 0,0), (0,1), (1,1)],
             Kind::Z => &[(-1,1), ( 0,1), (0,0), (1,0)],
-        }.iter().map(From::from)
+        }.map(Offset::from)
     }
 }
 
 #[derive(Clone, Copy, PartialEq, Debug)]
-pub enum Rotation { N, S, E, W }
+pub enum Rotation { N, E, S, W }
 
 impl std::ops::Mul<Rotation> for Offset {
     type Output = Self;
     fn mul(self, rotation: Rotation) -> Self::Output {
         match rotation {
             Rotation::N => self,
+            Rotation::E => Offset::new(self.y, -self.x),
             Rotation::S => Offset::new(-self.x, -self.y),
-            Rotation::E => Offset::new(self.x, -self.y),
             Rotation::W => Offset::new(-self.y, self.x),
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn s_piece_positioning() {
+        let s = Piece {
+            kind: Kind::S,
+            position: Offset::new(5, 6),
+            rotation: Rotation::W,
+        };
+        // VIDEO 1 2:13:49
+        assert_eq!(
+            s.cells(), 
+            [
+        )
     }
 }

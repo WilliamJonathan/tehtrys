@@ -42,6 +42,10 @@ impl Board {
     const HEIGHT: usize = 20;
     const SIZE: usize = Self::WIDTH * Self::HEIGHT;
 
+    fn in_bounds(Coordinate { x, y }: Coordinate) -> bool  {
+        x < Self::WIDTH && y < Self::HEIGHT
+    }
+
     fn blank() -> Self {
         Self([false; Self::SIZE])
     }
