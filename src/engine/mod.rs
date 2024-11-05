@@ -1,3 +1,5 @@
+use std::cell;
+
 use rand::{prelude::{SliceRandom, ThreadRng}, thread_rng};
 use self::piece::{Piece, Kind as PieceKind};
 
@@ -30,8 +32,11 @@ impl Engine {
     }
 
     fn place_cursor(&mut self) {
-        // Afirma que a peça não se sobrepõe às células preenchidas
-        
+        let cursor = self.cursor.take().expect("Called place_cursor without a cursor");
+        for coord in cursor.cells() {
+            let cell: &bool = self.board.get(coord);
+            // 2:29:57 VIDEO 1
+        }
     }
 }
 
@@ -46,8 +51,17 @@ impl Board {
         x < Self::WIDTH && y < Self::HEIGHT
     }
 
+    fn indexing(Coordinate { x, y }: Coordinate) -> usize {
+        y * Self::WIDTH + x
+    }
+
     fn blank() -> Self {
         Self([false; Self::SIZE])
+    }
+
+    fn get(&self, coord: Coordinate) -> Option<&bool> {
+        Self::in_bounds(coord)
+            .then(|| &self.0[Self::indexing(coord)])
     }
 
 }

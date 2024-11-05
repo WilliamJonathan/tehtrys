@@ -81,15 +81,15 @@ mod test {
 
     #[test]
     fn s_piece_positioning() {
-        let s = Piece {
-            kind: Kind::S,
+        let z = Piece {
+            kind: Kind::Z,
             position: Offset::new(5, 6),
             rotation: Rotation::W,
         };
         // VIDEO 1 2:13:49
         assert_eq!(
-            s.cells(), 
-            [
+            z.cells(), 
+            Some([(4, 5),(4, 6),(5, 6),(5, 7)].map(Coordinate::from))
         )
     }
 }
