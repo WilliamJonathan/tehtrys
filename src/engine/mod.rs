@@ -1,5 +1,3 @@
-use std::cell;
-
 use rand::{prelude::{SliceRandom, ThreadRng}, thread_rng};
 use self::piece::{Piece, Kind as PieceKind};
 
@@ -33,9 +31,11 @@ impl Engine {
 
     fn place_cursor(&mut self) {
         let cursor = self.cursor.take().expect("Called place_cursor without a cursor");
-        for coord in cursor.cells() {
-            let cell: &bool = self.board.get(coord);
-            // 2:29:57 VIDEO 1
+        
+        for coord in cursor.cells().expect("Cursor was out of bounds") {
+            let cell: &mut bool = self.board.get_mut(coord).unwrap();
+            debug_assert_eq!(*cell, false);
+            *cell = true;
         }
     }
 }
@@ -59,9 +59,9 @@ impl Board {
         Self([false; Self::SIZE])
     }
 
-    fn get(&self, coord: Coordinate) -> Option<&bool> {
+    fn get_mut(&mut self, coord: Coordinate) -> Option<&mut bool> {
         Self::in_bounds(coord)
-            .then(|| &self.0[Self::indexing(coord)])
+            .then(|| &mut self.0[Self::indexing(coord)])
     }
 
 }
