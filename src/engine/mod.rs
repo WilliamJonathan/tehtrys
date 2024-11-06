@@ -7,7 +7,7 @@ type Coordinate = cgmath::Vector2<usize>;
 type Offset = cgmath::Vector2<isize>;
 
 pub struct Engine {
-    board: Board,
+    matrix: Matrix,
     bag: Vec<PieceKind>,
     rng: ThreadRng,
     cursor: Option<Piece>,
@@ -16,7 +16,7 @@ pub struct Engine {
 impl Engine {
     pub fn new() -> Self {
         Engine {
-            board: Board::blank(),
+            matrix: Matrix::blank(),
             bag: Vec::new(),
             rng: thread_rng(),
             cursor: None,
@@ -33,16 +33,16 @@ impl Engine {
         let cursor = self.cursor.take().expect("Called place_cursor without a cursor");
         
         for coord in cursor.cells().expect("Cursor was out of bounds") {
-            let cell: &mut bool = self.board.get_mut(coord).unwrap();
+            let cell: &mut bool = self.matrix.get_mut(coord).unwrap();
             debug_assert_eq!(*cell, false);
             *cell = true;
         }
     }
 }
 
-struct Board([bool;Self::SIZE]);
+struct Matrix([bool;Self::SIZE]);
 
-impl Board {
+impl Matrix {
     const WIDTH: usize = 10;
     const HEIGHT: usize = 20;
     const SIZE: usize = Self::WIDTH * Self::HEIGHT;
@@ -58,7 +58,9 @@ impl Board {
     fn blank() -> Self {
         Self([false; Self::SIZE])
     }
-
+}
+// VIDEO 2 3:27
+impl Index<Coordinate> for Matrix {
     fn get_mut(&mut self, coord: Coordinate) -> Option<&mut bool> {
         Self::in_bounds(coord)
             .then(|| &mut self.0[Self::indexing(coord)])

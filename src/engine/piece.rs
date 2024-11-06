@@ -1,5 +1,5 @@
 use cgmath::Zero;
-use super::{Board, Coordinate, Offset};
+use super::{Matrix, Coordinate, Offset};
 
 pub(super) struct Piece {
     pub kind: Kind,
@@ -21,7 +21,7 @@ impl Piece {
                 (Ok(x), Ok(y)) => Coordinate { x, y },
                 _ => return None,
             };
-            if Board::in_bounds(new) {
+            if Matrix::in_bounds(new) {
                 *coord = new;
             } else {
                 return None;
