@@ -1,4 +1,4 @@
-use cgmath::Zero;
+use cgmath::{EuclideanSpace, Vector2};
 use super::{Matrix, Coordinate, Offset};
 
 pub(super) struct Piece {
@@ -15,8 +15,9 @@ impl Piece {
             .map(self.rotator())
             .map(self.positioner());
     
-        let mut coords = [Coordinate::zero(); Self::CELL_COUNT];
-        for (Offset { x, y }, coord) in offsets.into_iter().zip(&mut coords) {
+        let mut coords = [Coordinate::origin(); Self::CELL_COUNT];
+        for (offset, coord) in offsets.into_iter().zip(&mut coords) {
+            let positive_offset: Vector2<usize> = offset.cast() // VIDEO 2 13:06
             let new = match (x.try_into(), y.try_into()) {
                 (Ok(x), Ok(y)) => Coordinate { x, y },
                 _ => return None,

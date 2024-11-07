@@ -3,7 +3,7 @@ use self::piece::{Piece, Kind as PieceKind};
 
 mod piece;
 
-type Coordinate = cgmath::Vector2<usize>;
+type Coordinate = cgmath::Point2<usize>;
 type Offset = cgmath::Vector2<isize>;
 
 pub struct Engine {
@@ -33,7 +33,7 @@ impl Engine {
         let cursor = self.cursor.take().expect("Called place_cursor without a cursor");
         
         for coord in cursor.cells().expect("Cursor was out of bounds") {
-            let cell: &mut bool = self.matrix.get_mut(coord).unwrap();
+            let cell = &mut self.matrix[coord];
             debug_assert_eq!(*cell, false);
             *cell = true;
         }
@@ -59,11 +59,21 @@ impl Matrix {
         Self([false; Self::SIZE])
     }
 }
-// VIDEO 2 3:27
+
 impl Index<Coordinate> for Matrix {
-    fn get_mut(&mut self, coord: Coordinate) -> Option<&mut bool> {
-        Self::in_bounds(coord)
-            .then(|| &mut self.0[Self::indexing(coord)])
+    type Output = bool;
+    fn index(&mut self, coord: Coordinate) -> Self::Output {
+        assert!(Self::in_bounds(coord));
+        &self.0[Self::indexing(coord)]
+    }
+
+}
+
+impl IndexMut<Coordinate> for Matrix {
+    type Output = bool;
+    fn index_mut(&mut self, coord: Coordinate) -> Self::Output {
+        assert!(Self::in_bounds(coord));
+        &mut self.0[Self::indexing(coord)]
     }
 
 }
